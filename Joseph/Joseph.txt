@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// 约瑟夫环问题采用循环单链表实现
+
+//定义循环单链表的结点结构
+typedef int Datatype;
+typedef struct Node
+{
+	Datatype data;
+	struct Node *next;
+}Node;
+
+//函数声明
+Node *  create(int n);
+void Joseph(rear, m);
+
+int main()
+{
+	int length, num;
+	Node *pp = NULL;
+	printf("请输入约瑟夫环的长度：");
+	scanf("%d", &length);
+	printf("\n");
+	printf("输入要找元素的位序：");
+	scanf("%d", &num);
+
+	pp = create(length);
+	Joseph(pp, num);
+
+	system("pause");
+	return 0;
+}
+
+//函数定义
+Node * create(int n)
+{
+	Node * rear = NULL, *s; //rear尾指针
+	rear = (Node *)malloc(sizeof(Node));
+	rear->data = 1;
+	rear->next = rear;  //此时rear的指针域存放的是头结点的地址，即指针rear指向自己本身，形成循环链表
+
+	for (int i = 2; i <= n; i++)
+	{
+		s = (Node*)malloc(sizeof(Node));
+		s->data = i;
+
+		s->next = rear->next;   /*此句为关键，将rear指针域中存放的头结点的地址，不断地存入新节点的指针域，
+		                          即每申请一个结点就让它指向最初的头结点 */
+		rear->next = s;
+		rear = s;
+	}
+	
+	return rear;
+}
+
+void Joseph(Node* rear, int m)
+{
+	Node * pre = NULL, *p = NULL;  //设置两个工作指针*pre、*p , pre为p的前驱结点
+	pre = rear; p = rear->next;    //pre初始化为终端结点，p初始化为开始结点
+	
+	int count = 1;
+	while (p->next != p)
+	{
+		if (count < m)
+		{
+			pre = p;
+			p = p->next;
+			count++;
+		}
+
+		else
+		{
+			printf("%-5d", p->data);
+			pre->next = p->next;
+			free(p);
+			p = pre->next;
+			count = 1;
+		}
+	}
+
+	printf("%-5d", p->data);
+	free(p);
+}
